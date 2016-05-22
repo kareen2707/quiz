@@ -50,8 +50,15 @@ exports.create = function(req,res, next){
 	.then(function(quiz){
 		req.flash('success','Quiz creado con éxito.'); //Envía mensaje de éxito
 		res.redirect('/quizzes'); //redirecciona a la lista de preguntas
-	}).catch(function(error){
-		req.flash('error','Error al crear el quiz:' +error.message); //Envía mensaje de error
+	}).catch(Sequelize.ValidationError, function(error){
+		req.flash('error','Errores en el formulario:'); //Envía mensaje de error
+		for (var i in error.errors){
+			req.flash('error', error.errors[i].value);
+		};
+		res.render('quizzes/new', {quiz:quiz});
+	})
+	.catch(function(error){
+		req.flash('error','Error al crear un Quiz:' +error.message);
 		next(error);
 	});
 };
