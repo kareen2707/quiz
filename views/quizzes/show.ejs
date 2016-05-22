@@ -1,7 +1,6 @@
-<html>
-<form method="get" action="/check">
-	Pregunta: <%= question %> <br>
+
+<form method="get" action="/quizzes/<%= quiz.id %>/check">
+	Pregunta: <%= quiz.question %> <br>
 	<input type = "text" name="answer" value="<%= answer %>" placeholder= "Responda aquí"/>
 	<input type = "submit" value="Comprobar">
 </form>
-</html>
