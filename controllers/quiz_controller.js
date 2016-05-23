@@ -104,3 +104,17 @@ exports.destroy = function(req, res, next){
 		next(error);
 	});
 };
+
+//SEARCH /quizzes?search=texto_a_buscar
+exports.search = function(req, res, next){
+	var texto_a_buscar= req.query.search || "";
+	models.Quiz.findAll({
+		where: {
+			question:{
+				$like: "%" + texto_a_buscar + "%"
+			}
+		}
+	}).then(function(quizzes){
+		res.render('quizzes/index.ejs', {quizzes:quizzes});
+	}).catch(function(error){next(error);});
+};
