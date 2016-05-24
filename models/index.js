@@ -4,7 +4,7 @@ var path = require ('path');
 var Sequelize = require("sequelize");
 
 //Usar BBDD Sqlite en Heroku
-/*var url = process.env.DATABASE_URL.match(/(.*)\:\/\/(.*?)\:(.*)@(.*)\:(.*)\/(.*)/);
+var url = process.env.DATABASE_URL.match(/(.*)\:\/\/(.*?)\:(.*)@(.*)\:(.*)\/(.*)/);
 
  var DATABASE_PROTOCOL = url[1];
  var DATABASE_DIALECT = url[1];
@@ -21,13 +21,13 @@ var Sequelize = require("sequelize");
      host: DATABASE_HOST,
      storage: DATABASE_STORAGE,
      omitNULL: true
- });*/
+ });
 
 //Usar BBDD Sqlite en mi máquina
-var sequelize = new Sequelize(null, null, null, {
+/*var sequelize = new Sequelize(null, null, null, {
 dialect: "sqlite",
 storage: "quiz.sqlite"
-});
+});*/
 
 //Importar la definición de la tabla Quiz de quiz.js
 var Quiz = sequelize.import(path.join(__dirname, "quiz"));
@@ -36,7 +36,7 @@ var Quiz = sequelize.import(path.join(__dirname, "quiz"));
 var Comment = sequelize.import(path.join(__dirname, 'comment'));
 
 //Importar la definición de la tabla Users de users.js
-var User = sequelize.import(path.join(__dirname, 'comment')); 
+var User = sequelize.import(path.join(__dirname, 'user')); 
 
 //Relaciones entre modelos
 Comment.belongsTo(Quiz);

@@ -21,7 +21,8 @@ module.exports = {
            password: encryptPassword('5678', 'bbbb'),
            salt:     'bbbb',
            createdAt: new Date(), updatedAt: new Date() }
-        ]);
+        ],
+        {});
   },
 
   down: function (queryInterface, Sequelize) {
