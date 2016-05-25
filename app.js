@@ -9,6 +9,7 @@ var partials = require('express-partials');
 var flash = require('express-flash');
 var methodOverride = require('method-override');
 var routes = require('./routes/index');
+var url = require('url');
 
 var app = express();
 
@@ -30,6 +31,15 @@ app.use(methodOverride('_method',{methods:["POST","GET"]}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
 app.use(flash());
+
+// Helper dinamico:
+app.use(function(req, res, next) {
+
+   // Hacer visible req.session en las vistas
+   res.locals.session = req.session;
+  
+   next();
+});
 
 app.use('/', routes);
 
@@ -64,10 +74,6 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-//Helper dinámico
-app.use(function(req, res, next){
-    res.locals.session = req.session;
-    next();
-});
+
 
 module.exports = app;

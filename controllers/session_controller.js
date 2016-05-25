@@ -1,5 +1,6 @@
 var models = require ('../models');
 var Sequelize = require ('sequelize');
+var url = require('url');
 
 //GET/session --Formulario de login
 exports.new = function (req, res, next){

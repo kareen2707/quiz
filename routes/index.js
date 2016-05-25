@@ -3,7 +3,7 @@ var router = express.Router();
 var quizController = require('../controllers/quiz_controller'); //Subo a la carpeta routes y accedo a donde esta quiz_controller
 var commentController = require('../controllers/comment_controller');
 var userController = require('../controllers/user_controller');
-//var sessionController = require ('../controllers/session_controller');
+var sessionController = require ('../controllers/session_controller');
 // GET home page. 
 router.get('/', function(req, res) {
   res.render('index');
@@ -45,8 +45,8 @@ router.put('/users/:userId(\\d+)', userController.update);
 router.delete('/users/:userId(\\d+)', userController.destroy);
 
 //Definición de rutas de sesión
-//router.get('/session', sessionController.new);
-//router.post('/session', sessionController.create);
-//router.delete('/session', sessionController.destroy);
+router.get('/session', sessionController.new);
+router.post('/session', sessionController.create);
+router.delete('/session', sessionController.destroy);
 
 module.exports = router;
