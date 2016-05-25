@@ -64,6 +64,10 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
+//Helper dinámico
+app.use(function(req, res, next){
+    res.locals.session = req.session;
+    next();
+});
 
 module.exports = app;

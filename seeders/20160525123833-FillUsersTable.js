@@ -4,7 +4,20 @@ var crypto = require('crypto');
 
 
 function encryptPassword(password, salt) {
-    return crypto.createHmac('sha1', salt).update(password).digest('hex');
+    //return crypto.createHmac('sha1', salt).update(password).digest('hex');
+  var hmac;
+  var algorithm = 'sha1';
+  var key       = salt;
+  var text      = password;
+  var hash;
+
+  hmac = crypto.createHmac(algorithm, key);
+
+  // readout format:
+  hmac.setEncoding('hex');
+
+    hash = hmac.read();
+    return hash;
 };
 
 
@@ -21,8 +34,7 @@ module.exports = {
            password: encryptPassword('5678', 'bbbb'),
            salt:     'bbbb',
            createdAt: new Date(), updatedAt: new Date() }
-        ],
-        {});
+        ]);
   },
 
   down: function (queryInterface, Sequelize) {
