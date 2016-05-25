@@ -39,8 +39,10 @@ var Comment = sequelize.import(path.join(__dirname, 'comment'));
 var User = sequelize.import(path.join(__dirname, 'user')); 
 
 //Relaciones entre modelos
-Comment.belongsTo(Quiz);
-Quiz.hasMany(Comment);
+Comment.belongsTo(Quiz); //Un comentario pertenece a una única pregunta
+Quiz.hasMany(Comment); //Una pregunta puede tener varios comentarios
+//User.hasMany(Quiz, {foreingKey: 'AuthorId'}); //Un usuario puede tener varias preguntas creadas
+//Quiz.belongsTo(User, {as: 'Author' , foreingKey: 'AuthorId'}); //Una pregunta solo puede haber sido creada por un usuario
 
 exports.Quiz = Quiz; //exporta la deifinición de la tabla Quiz
 exports.Comment = Comment;

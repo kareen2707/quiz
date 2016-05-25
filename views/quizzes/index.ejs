@@ -1,27 +1,26 @@
-<form method="get" action="/quizzes/search">
-	<input type="text" placeholder="Search" name="search" id="search" />
-	<span class="boton">
-		<button type="submit">Buscar</button>
-</span>	
-</form>
+
 
 <table>
-	<% for (var i in quizzes){%>
-	<tr>
-		<td>
-			<a href="/quizzes/<%= quizzes[i].id%>"><%= quizzes[i].question %></a>
-		</td>
-		<td>
-			<a href="/quizzes/<%= quizzes[i].id%>/edit"><button>Editar</button></a>
-		</td>
-		<td>
-			<a href="/quizzes/<%= quizzes[i].id%>?_method=DELETE" 
-			onClick="return confirm('Borrar:<%= quizzes[i].question %>');">
-			<button>Borrar</button>
-			</a>
-		</td>
+  <% for (var i in quizzes) { %> 
+     <tr>
+        
+        <td>
+           <a href="/quizzes/<%= quizzes[i].id %>"><%= quizzes[i].question %></a>
+        </td>
+        
+              <td>
+                 <a href="/quizzes/<%= quizzes[i].id %>/edit"><button>editar</button></a>
+              </td>
+              <td>
+                 <a href="/quizzes/<%= quizzes[i].id %>?_method=DELETE" 
+                    onClick="return confirm('Borrar: <%= quizzes[i].question %>');">
+                    <button>borrar</button>
+                 </a>
+              </td>
+     </tr> 
+  <% } %>
+</table>
 
-	</tr>
-<%}%>
-</table>	
-<a href="/quizzes/new"><button type="button">Crear pregunta</button></a>
+<% if (session.user) { %>
+  <a href="/quizzes/new"><button type="button">Crear pregunta</button></a>
+<% } %>
