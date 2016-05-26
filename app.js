@@ -41,6 +41,27 @@ app.use(function(req, res, next) {
    next();
 });
 
+// Autologout
+app.use(function(req, res, next) {
+if (req.session.user) {
+// Check if time is out
+console.log("sessionStart: " + req.session.user.sessionStart );
+console.log("DeltaTime: " + (new Date().getTime() - req.session.user.sessionStart) );
+if (req.session.user.sessionStart && ((new Date().getTime() - req.session.user.sessionStart) > 120000)) {
+// Logout logged user
+req.session.user = undefined;
+req.flash("error", "User was logged out for inactivity");
+console.log("------------------User was logged out--------------------");
+} else {
+// Restart time
+req.session.user.sessionStart = new Date().getTime();
+}
+
+}
+next();
+});
+
+
 app.use('/', routes);
 
 
