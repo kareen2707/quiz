@@ -1,21 +1,20 @@
 var models = require('../models');
 var Sequelize = require('sequelize');
 
-
-// Autoload el comentario asociado a :commentId
-exports.load = function(req, res, next, commentId) {
-  models.Comment.findById(commentId)
-      .then(function(comment) {
-          if (comment) {
-            req.comment = comment;
-            next();
-          } else { 
-            next(new Error('No existe commentId=' + commentId));
-          }
-        })
-        .catch(function(error) { next(error); });
+exports.load= function(req, res, next, commentId){
+	models.Comment.findById(commentId)
+	.then(function(comment){
+		if(comment){
+			req.comment = comment;
+			next();
+		}
+		else{
+			next(new Error('No existe commentId:' +commentId));
+		}
+	})
+	.catch(function(error){
+		next: error;});
 };
-
 
 // GET /quizzes/:quizId/comments/new
 exports.new = function(req, res, next) {
@@ -31,7 +30,8 @@ exports.new = function(req, res, next) {
 exports.create = function(req, res, next) {
   var comment = models.Comment.build(
       { text:   req.body.comment.text,          
-        QuizId: req.quiz.id
+        QuizId: req.params.quizId,
+        autor: req.session.user.username
       });
 
   comment.save()
@@ -55,19 +55,32 @@ exports.create = function(req, res, next) {
 	  });    
 };
 
+exports.accept = function(req, res, next){
+	req.comment.accepted = true;
+	req.comment.save(["accepted"])
+	.then(function(comment){
+		req.flash('success', 'Comentario aceptado con éxito');
+		res.redirect('/quizzes/' +req.params.quizId);
+	})
+	.catch(function(error){
+		req.flash('error', 'Error al aceptar el comentario:' +error.message);
+		next(error);
+	});
+};
+exports.ownershipRequired = function(req,res,next){
 
-// GET /quizzes/:quizId/comments/:commentId/accept
-exports.accept = function(req, res, next) {
+	models.Quiz.find({
+		where: {id: Number(req.comment.QuizId)}
+	}).then(function(quiz){
+		if(quiz){
+			var objQuizOwner = quiz.UserId;////
+			var logUser = req.session.user.id;
+			var isAdmin = req.session.user.isAdmin;
+			console.log(objQuizOwner, logUser, isAdmin);
+			if(isAdmin ||objQuizOwner === logUser){			
+				next();
+			} else { res.redirect('/');}
+		} else {next(new Error('No existe quizId='+ quizId));}
+	}).catch(function(error){next(error)});
 
-  req.comment.accepted = true;
-
-  req.comment.save(["accepted"])
-    .then(function(comment) {
-      req.flash('success', 'Comentario aceptado con éxito.');
-      res.redirect('/quizzes/'+req.params.quizId);
-    })
-    .catch(function(error) {
-       req.flash('error', 'Error al aceptar un Comentario: '+error.message);
-       next(error);
-    });
-  };
+};
