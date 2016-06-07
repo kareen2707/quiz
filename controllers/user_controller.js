@@ -17,25 +17,13 @@ exports.load = function(req, res, next, userId) {
         .catch(function(error) { next(error); });
 };
 
-// MW que permite acciones solamente si al usuario logeado es admin o rl propio usuario.
-exports.ownershipRequired = function(req, res, next){
-
-    var isAdmin      = req.session.user.isAdmin;
-    var userId       = req.user.id;
-    var loggedUserId = req.session.user.id;
-
-    if (isAdmin || userId === loggedUserId) {
-        next();
-    } else {
-      console.log('Ruta prohibida: no es el usuario logeado, ni un administrador.');
-      res.send(403);    }
-};
-
 
 // GET /users
 exports.index = function(req, res, next) {
     models.User.findAll({order: ['username']})
         .then(function(users) {
+            console.log("INDEX USERS");
+            console.log(JSON.stringify(users));
             res.render('users/index', { users: users });
         })
         .catch(function(error) { next(error); });
@@ -48,47 +36,46 @@ exports.show = function(req, res, next) {
 };
 
 
-// GET /users/new
 exports.new = function(req, res, next) {
-    var user = models.User.build({ username: "", 
-                                   password: "" });
-
+    var user = models.User.build({username: "", password: ""});
     res.render('users/new', { user: user });
 };
 
-
-// POST /users
 exports.create = function(req, res, next) {
-    var user = models.User.build({ username: req.body.user.username,
-                                   password: req.body.user.password
-                                });
-
-    // El login debe ser unico:
-    models.User.find({where: {username: req.body.user.username}})
-        .then(function(existing_user) {
-            if (existing_user) {
-                var emsg = "El usuario \""+ req.body.user.username +"\" ya existe."
-                req.flash('error', emsg);
-                res.render('users/new', { user: user });
-            } else {
-                // Guardar en la BBDD
-                return user.save({fields: ["username", "password", "salt"]})
-                    .then(function(user) { // Renderizar pagina de usuarios
-                        req.flash('success', 'Usuario creado con éxito.');
-                        res.redirect('/users/'+ user.id);
-                    })
-                    .catch(Sequelize.ValidationError, function(error) {
-                        req.flash('error', 'Errores en el formulario:');
-                        for (var i in error.errors) {
-                            req.flash('error', error.errors[i].value);
-                        };
-                        res.render('users/new', { user: user });
-                    });
-            }
+    var user = models.User.build({
+        username: req.body.user.username,
+        password: req.body.user.password
+    });
+    console.log("CREATE USERS");
+    console.log(JSON.stringify(user));
+    models.User.find({ where: {username: req.body.user.username}})
+    .then(function(existing_user) {
+        if (existing_user) {
+            var msg = "El usuario \"" + req.body.user.username + "\" ya existe."
+            req.flash('error', msg);
+            res.render('users/new', {
+            user: user
+            });
+        } else {
+            return user.save({
+                fields: ["username", "password", "salt"]
+            })
+    .then(function(user) {
+        req.flash('success', 'Usuario creado con éxito!');
+        res.redirect('/session');
         })
-        .catch(function(error) { 
-            next(error);
-        });
+    .catch(Sequelize.ValidationError, function(error) {
+    req.flash('error', 'Se ha producido estos errores:');
+        for (var i in error.errors) {
+        req.flash('error', error.errors[i].value);
+    };
+    res.render('users/new', {user: user});
+    });
+    }
+})
+.catch(function(error) {
+next(error);
+});
 };
 
 
@@ -143,8 +130,6 @@ exports.destroy = function(req, res, next) {
         });
 };
 
-
-
 /*
  * Autenticar un usuario: Comprueba si el usuario esta registrado en users
  *
@@ -163,3 +148,27 @@ exports.autenticar = function(login, password) {
             }
         });
 }; 
+
+exports.adminOrMyselfRequired = function(req, res, next) {
+    var isAdmin = req.session.user.isAdmin;
+    var userId = req.user.id;
+    var loggedUserId = req.session.user.id;
+        if (isAdmin || userId === loggedUserId) {
+            next();
+        } else {
+            console.log("Ruta prohibida, el usuario no está registrado ni es administrador");
+            res.send(403);
+        }
+};
+
+exports.adminAndNotMyselfRequired = function(req, res, next) {
+    var isAdmin = req.session.user.isAdmin;
+    var userId = req.user.id;
+    var loggedUserId = req.session.user.id;
+    if (isAdmin || userId !== loggedUserId) {
+        next();
+    } else {
+        console.log("Ruta prohibida, el usuario no está registrado ni es administrador");
+        res.send(403);
+    }
+};

@@ -1,8 +1,11 @@
 <table>
-  <% for (var i in quizzes) { %>        
+  <% for (var i in quizzes) { %>
      <tr>
         <td>
            <a href="/quizzes/<%= quizzes[i].id %>"><%= quizzes[i].question %></a>
+        </td>
+        <td>
+           <a href="/users/<%= quizzes[i].AuthorId %>"><%= quizzes[i].Author.username %></a>
         </td>
         <% if (session.user) { %>
            <% if (session.user.isAdmin || session.user.id === quizzes[i].AuthorId) { %>
@@ -10,14 +13,14 @@
                  <a href="/quizzes/<%= quizzes[i].id %>/edit"><button>editar</button></a>
               </td>
               <td>
-                 <a href="/quizzes/<%= quizzes[i].id %>?_method=DELETE" 
+                 <a href="/quizzes/<%= quizzes[i].id %>?_method=DELETE"
                     onClick="return confirm('Borrar: <%= quizzes[i].question %>');">
                     <button>borrar</button>
                  </a>
               </td>
-           <% } %>          
+           <% } %>
         <% } %>
-     </tr> 
+     </tr>
   <% } %>
 </table>
 

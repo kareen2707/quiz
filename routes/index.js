@@ -34,13 +34,13 @@ router.get('/users/:userId(\\d+)',      userController.show);    // ver un usuar
 router.get('/users/new',                userController.new);     // formulario sign un
 router.post('/users',                   userController.create);     // registrar usuario
 router.get('/users/:userId(\\d+)/edit', sessionController.loginRequired, 
-										userController.ownershipRequired, 
+										userController.adminOrMyselfRequired, 
 										userController.edit);     // editar información de cuenta
 router.put('/users/:userId(\\d+)',      sessionController.loginRequired, 
-										userController.ownershipRequired, 
+										userController.adminOrMyselfRequired, 
 										userController.update);   // actualizar información de cuenta
 router.delete('/users/:userId(\\d+)',   sessionController.loginRequired, 
-										userController.ownershipRequired, 
+										userController.adminAndNotMyselfRequired, 
 										userController.destroy);  // borrar cuenta
 
 // Definición de rutas de /quizzes
@@ -68,8 +68,8 @@ router.get('/quizzes/:quizId(\\d+)/comments/new',  sessionController.loginRequir
 router.post('/quizzes/:quizId(\\d+)/comments',     sessionController.loginRequired, 
 	                                               commentController.create);
 router.put('/quizzes/:quizId(\\d+)/comments/:commentId(\\d+)/accept', 
-	                                               sessionController.loginRequired, 
-												   commentController.ownershipRequired, 
+	                                               sessionController.loginRequired,
+	                                               quizController.ownershipRequired,  
 	                                               commentController.accept);
 
 module.exports = router;

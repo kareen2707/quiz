@@ -1,58 +1,48 @@
 var crypto = require('crypto');
 
-// Definicion de la clase User:
-
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('User',
-      { username: {
+    return sequelize.define('User', {
+        username: {
             type: DataTypes.STRING,
             unique: true,
-            validate: { notEmpty: { msg: "Falta username" }}
+            validate: {
+                notEmpty: {
+                    msg: "Username is missing"
+                }
+            }
         },
         password: {
             type: DataTypes.STRING,
-            validate: { notEmpty: {msg: "Falta password"}},
-            set: function (password) {
-                    // String aleatorio usado como salt.
-                    this.salt = Math.round((new Date().valueOf() * Math.random())) + '';
-                    this.setDataValue('password', encryptPassword(password, this.salt));
+            set: function(password) {
+                this.salt = Math.round((new Date().valueOf() * Math.random())) + '';
+                this.setDataValue('password', encryptPassword(password, this.salt));
+            },
+            validate: {
+                notEmpty: {
+                    msg: "Answer is missing"
                 }
+            }
         },
         salt: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
         },
         isAdmin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         }
-      },
-      { instanceMethods: {
-          verifyPassword: function (password) {
-            return encryptPassword(password, this.salt) === this.password;
+    }, {
+        instanceMethods: {
+            verifyPassword: function(password) {
+                return encryptPassword(password, this.salt) === this.password;
             }
-          }
         }
-
-      );
+    });
 };
-
 /*
- * Encripta un password en claro.
- * Mezcla un password en claro con el salt proporcionado, ejecuta un SHA1 digest, 
- * y devuelve 40 caracteres hexadecimales.
+ * Encripts password.
+ * Mixes password with salt making a SHA1 digest,
+ * returns 40 hexadecimal characters.
  */
 function encryptPassword(password, salt) {
-	var hmac;
-	var algorithm = 'sha1';
-	var key       = salt;
-	var text      = password;
-	var hash;
-
-	hmac = crypto.createHmac(algorithm, key);
-
-	// readout format:
-	hmac.setEncoding('hex');
-
-    hash = hmac.read();
-    return hash;
+    return crypto.createHmac('sha1', salt).update(password).digest('hex');
 };

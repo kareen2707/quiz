@@ -26,8 +26,10 @@ var Sequelize = require("sequelize");
 //Usar BBDD Sqlite en mi máquina
 var sequelize = new Sequelize(null, null, null, {
     dialect: "sqlite",
-    storage: "quiz.sqlite"
+    storage: "quiz.sqlite",
+    omitNull: true
 });
+
 
 //Importar la definición de la tabla Quiz de quiz.js
 var Quiz = sequelize.import(path.join(__dirname, "quiz"));
@@ -38,10 +40,16 @@ var Comment = sequelize.import(path.join(__dirname, 'comment'));
 //Importar la definición de la tabla Users de users.js
 var User = sequelize.import(path.join(__dirname, 'user'));
 
-//Relaciones entre modelos
-// User.hasMany(Quiz, { foreingKey: 'AuthorId'}); //Un usuario puede tener varias preguntas creadas
-// Quiz.belongsTo(User, { as: 'Author' , foreingKey: 'AuthorId'}); //Una pregunta solo puede haber sido creada por un usuario
+//Relacion entre Quiz - Comment 1:N
 
+Comment.belongsTo(Quiz);
+Quiz.hasMany(Comment);
+Comment.belongsTo(User, {
+    as: 'Author',
+    foreignKey: 'AuthorId'
+});
+
+//Relación entre User - Quizz 1:N
 User.hasMany(Quiz, {
     foreignKey: 'AuthorId'
 });
@@ -50,8 +58,6 @@ Quiz.belongsTo(User, {
     foreignKey: 'AuthorId'
 });
 
-Comment.belongsTo(Quiz); //Un comentario pertenece a una única pregunta
-Quiz.hasMany(Comment); //Una pregunta puede tener varios comentarios
 
 exports.Quiz = Quiz; //exporta la deifinición de la tabla Quiz
 exports.Comment = Comment;
